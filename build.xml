@@ -1,0 +1,49 @@
+<project name="struts-mvc" default="dist" basedir=".">
+    
+    <!-- Definir propriedades -->
+    <property name="src.dir" value="struts-mvc-webapp/src"/>
+    <property name="build.dir" value="build"/>
+    <property name="web.dir" value="struts-mvc-webapp/WebContent"/>
+    <property name="classes.dir" value="${build.dir}/WEB-INF/classes"/>
+    <property name="lib.dir" value="${web.dir}/WEB-INF/lib"/>
+    <property name="dist.dir" value="dist"/>
+    <property name="war.file" value="${dist.dir}/struts-mvc.war"/>
+
+    <!-- Limpar compilação anterior -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <!-- Criar diretórios necessários -->
+    <target name="prepare">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <!-- Compilar código Java -->
+    <target name="compile" depends="prepare">
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Copiar arquivos da aplicação -->
+    <target name="copy-resources" depends="compile">
+        <copy todir="${build.dir}">
+            <fileset dir="${web.dir}" excludes="WEB-INF/web.xml"/>
+        </copy>
+        <copy file="${web.dir}/WEB-INF/web.xml" todir="${build.dir}/WEB-INF"/>
+    </target>
+
+    <!-- Criar o arquivo WAR -->
+    <target name="dist" depends="copy-resources">
+        <war destfile="${war.file}" basedir="${build.dir}"/>
+    </target>
+
+</project>
